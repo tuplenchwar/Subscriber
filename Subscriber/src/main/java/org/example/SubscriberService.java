@@ -64,14 +64,14 @@ public class SubscriberService {
                     leaderBrokerUrl + "/broker/register-subscriber", request, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                System.out.println("Subscriber successfully registered with broker.");
+                System.out.println(response.getBody());
             } else {
                 throw new RuntimeException("Failed to register subscriber.");
             }
     }
 
 
-    public CopyOnWriteArrayList<String> getAvailableTopics(Integer subscriberId) {
+    public CopyOnWriteArrayList<String> getAvailableTopics(String subscriberConnectionURL) {
         int retryCount = 0;
         int maxRetries = 3; // Prevent infinite loop
 
@@ -87,7 +87,7 @@ public class SubscriberService {
             }
 
             try {
-                String url = leaderBrokerUrl + "/broker/gettopics?subscriberId=" + subscriberId;
+                String url = leaderBrokerUrl + "/broker/gettopics?subscriberConnectionURL=" + subscriberConnectionURL;
                 ResponseEntity<CopyOnWriteArrayList> response = restTemplate.getForEntity(url, CopyOnWriteArrayList.class);
 
                 if (response.getStatusCode() == HttpStatus.FORBIDDEN) {
@@ -206,12 +206,13 @@ public class SubscriberService {
     }
 
 
-    public void receiveMessage(Packet message) {
+    public ResponseEntity<String> receiveMessage(Packet message) {
         System.out.println("Received Message:");
         System.out.println("Topic: " + message.getTopic());
         System.out.println("Message: " + message.getMessage());
         System.out.println("Publisher ID: " + message.getPid());
         System.out.println("Timestamp: " + message.getTimestamp());
+        return ResponseEntity.ok("Subscriber unsubscribe to topic successfully.");
     }
 
     private void startSubscriberConsole() {
@@ -229,7 +230,7 @@ public class SubscriberService {
 
             switch (choice) {
                 case 1:
-                    CopyOnWriteArrayList<String> topics = getAvailableTopics(subscriberId);
+                    CopyOnWriteArrayList<String> topics = getAvailableTopics(subscriberUrl);
                     break;
                 case 2:
                     System.out.print("Enter topic to subscribe: ");

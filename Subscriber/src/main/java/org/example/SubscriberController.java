@@ -1,7 +1,11 @@
 package org.example;
 
-import dto.Packet;
-import org.springframework.web.bind.annotation.*;
+import dto.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/subscriber")
@@ -14,8 +18,8 @@ public class SubscriberController {
     }
 
     @PostMapping("/receive")
-    public void receiveMessage(@RequestBody Packet message) {
-        subscriberService.receiveMessage(message);
+    public ResponseEntity<String> receiveMessage(@RequestBody Packet message) {
+        return subscriberService.receiveMessage(message);
     }
 }
 
